@@ -1,0 +1,29 @@
+{
+	"name": "client",
+	"version": "0.1.0",
+	"private": true,
+	"scripts": {
+		"dev": "next dev",
+		"build": "next build",
+		"start": "next start",
+		"lint": "biome check",
+		"format": "biome format --write"
+	},
+	"dependencies": {
+		"@supabase/ssr": "^0.12.7",
+		"@supabase/supabase-js": "^2.117.2",
+		"next": "~16.4.3",
+		"react": "~19.3.1",
+		"react-dom": "~19.3.1"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "2.4.2",
+		"@tailwindcss/turbopack": "^4",
+		"@types/node": "^20",
+		"@types/react": "^19",
+		"@types/react-dom": "^19",
+		"babel-plugin-react-compiler": "1.0.0",
+		"tailwindcss": "^4",
+		"typescript": "^5"
+	}
+}
