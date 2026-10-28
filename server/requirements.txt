@@ -1,0 +1,12 @@
+fastapi
+uvicorn[standard]
+python-multipart
+supabase
+PyJWT
+cryptography
+requests
+pymupdf
+langchain-text-splitters
+numpy
+fastembed
+python-dotenv
