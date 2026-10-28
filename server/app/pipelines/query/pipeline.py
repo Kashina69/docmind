@@ -258,29 +258,19 @@ def run_query_pipeline(
         route_future   = None
         if n_docs > 1:
             route_executor = ThreadPoolExecutor(max_workers=1)
-            route_future   = route_executor.submit(_route_model, r, query, n_docs)
+            route_future   = route_executor.submit(route_model, r, query, n_docs)
 
         print(f"[Handler] Embedding query (local model — free)")
         direct_embedding = embed_query(search_query)
 
         print(f"[Handler] Running hybrid search (Supabase — free)")
-        if document_ids:
-            results_obj = supabase.schema("rag").rpc("hybrid_search_multi_doc", {
-                "query_embedding": direct_embedding,
-                "query_text": search_query,
-                "target_user_id": user_id,
-                "doc_ids": document_ids,
-                "match_count": 20,
-            }).execute()
-            candidates = results_obj.data or []
-        else:
-            candidates = execute_hybrid_search(
-                user_id=user_id,
-                query_embedding=direct_embedding,
-                query_text=search_query,
-                match_count=20,
-                document_id=document_id,
-            )
+        candidates = hybrid_search(
+            user_id=user_id,
+            query_embedding=direct_embedding,
+            query_text=search_query,
+            document_id=document_id,
+            document_ids=document_ids,
+        )
 
         print(f"[Handler] Hybrid search: {len(candidates)} candidates")
 
@@ -345,23 +335,13 @@ def run_query_pipeline(
                 tokens_used += 1
                 hyde_embedding, hyp_answer = generate_hyde_embedding(query)
 
-                if document_ids:
-                    hyde_results_obj = supabase.schema("rag").rpc("hybrid_search_multi_doc", {
-                        "query_embedding": hyde_embedding,
-                        "query_text": search_query,
-                        "target_user_id": user_id,
-                        "doc_ids": document_ids,
-                        "match_count": 20,
-                    }).execute()
-                    hyde_candidates = hyde_results_obj.data or []
-                else:
-                    hyde_candidates = execute_hybrid_search(
-                        user_id=user_id,
-                        query_embedding=hyde_embedding,
-                        query_text=search_query,
-                        match_count=20,
-                        document_id=document_id,
-                    )
+                hyde_candidates = hybrid_search(
+                    user_id=user_id,
+                    query_embedding=hyde_embedding,
+                    query_text=search_query,
+                    document_id=document_id,
+                    document_ids=document_ids,
+                )
 
                 if hyde_candidates:
                     hyde_top = hyde_candidates[0].get("rrf_score", 0)
