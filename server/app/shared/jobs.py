@@ -1,6 +1,6 @@
 import json
 
-from app.rate_limiter import get_redis_client
+from app.shared.rate_limiter import get_redis_client
 
 RESULT_TTL = 3600
 

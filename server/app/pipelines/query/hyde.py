@@ -1,6 +1,6 @@
-from app.embedder import embed_single_text, embed_texts
-from app.llm import _call_llm
-from app.prompts import strip_think_tags
+from app.llm.client import _call_llm
+from app.llm.prompts import strip_think_tags
+from app.pipelines.ingestion.embedder import embed_single_text, embed_texts
 
 
 def embed_query(query: str) -> list[float]:

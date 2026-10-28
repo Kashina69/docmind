@@ -1,5 +1,5 @@
 import re
-from app.utils import cosine_similarity
+from app.shared.utils import cosine_similarity
 
 CONVERSATIONAL_PATTERNS = [
 

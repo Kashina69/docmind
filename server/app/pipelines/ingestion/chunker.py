@@ -1,6 +1,6 @@
 import re
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from app.structure_detector import detect_sections, Section
+from app.pipelines.ingestion.structure_detector import detect_sections, Section
 
 _PROSE_SPLITTER_ARGS = dict(
     separators   = ["\n\n", "\n", ". ", " ", ""],

@@ -1,8 +1,8 @@
-from app.supabase_client import get_service_client
-from app.rate_limiter    import acquire_task_token
-from app.llm             import generate_json
-from app.jobs            import write_result
-from app.sources         import fetch_source_content
+from app.shared.supabase_client import get_service_client
+from app.shared.rate_limiter import acquire_task_token
+from app.llm.client import generate_json
+from app.shared.jobs import write_result
+from app.pipelines.generation.fetch import fetch_source_content
 
 MAX_FLASHCARDS = 20
 

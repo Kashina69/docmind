@@ -2,11 +2,11 @@ import hashlib
 import os
 from pathlib import Path
 
-from app.chunker import chunk_pages
-from app.embedder import embed_texts
-from app.extractor import read_pdf_bytes, extract_text_from_pdf
-from app.storage import storage_key_for, put_file, get_local_path
-from app.supabase_client import get_service_client
+from app.pipelines.ingestion.chunker import chunk_pages
+from app.pipelines.ingestion.embedder import embed_texts
+from app.pipelines.ingestion.extractor import read_pdf_bytes, extract_text_from_pdf
+from app.shared.storage import storage_key_for, put_file, get_local_path
+from app.shared.supabase_client import get_service_client
 
 EMBED_BATCH_SIZE  = 32
 

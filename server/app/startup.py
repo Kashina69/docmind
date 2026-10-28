@@ -1,8 +1,8 @@
 import threading
 from contextlib import asynccontextmanager
 
-from app.ingestion import ingest_document
-from app.supabase_client import get_service_client
+from app.pipelines.ingestion.pipeline import ingest_document
+from app.shared.supabase_client import get_service_client
 
 
 def _recover_stuck_documents() -> None:

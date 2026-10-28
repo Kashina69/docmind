@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Header, HTTPException
 
 from app.routes.deps import current_user, supabase
-from app.storage import delete_file
+from app.shared.storage import delete_file
 
 router = APIRouter(tags=["library"])
 

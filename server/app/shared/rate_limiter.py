@@ -1,7 +1,7 @@
 import time
 import uuid
 
-from app.store import SimpleStore, get_store
+from app.shared.store import SimpleStore, get_store
 
 BUCKET_CAPACITY   = 60
 WINDOW_SECONDS    = 60

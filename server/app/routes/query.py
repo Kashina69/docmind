@@ -6,10 +6,10 @@ import uuid
 from fastapi import APIRouter, BackgroundTasks, Header, HTTPException, Request
 from fastapi.responses import JSONResponse
 
-from app.classifier import get_conversational_response
-from app.jobs import read_result
-from app.query_pipeline import run_query_pipeline
-from app.rate_limiter import get_redis_client
+from app.pipelines.query.classifier import get_conversational_response
+from app.pipelines.query.pipeline import run_query_pipeline
+from app.shared.jobs import read_result
+from app.shared.rate_limiter import get_redis_client
 from app.routes.deps import (
     current_user,
     get_conversation,

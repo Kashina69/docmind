@@ -1,6 +1,6 @@
 import jwt
 
-from app.secrets import get_secret
+from app.shared.secrets import get_secret
 
 _jwks_client: jwt.PyJWKClient | None = None
 

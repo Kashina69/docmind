@@ -4,8 +4,8 @@ import uuid
 from fastapi import APIRouter, BackgroundTasks, Header, HTTPException, Request
 from fastapi.responses import FileResponse
 
-from app.ingestion import ingest_document
-from app.storage import get_local_path, serve_url, storage_key_for
+from app.pipelines.ingestion.pipeline import ingest_document
+from app.shared.storage import get_local_path, serve_url, storage_key_for
 from app.routes.deps import current_user, supabase
 
 router = APIRouter(tags=["upload"])

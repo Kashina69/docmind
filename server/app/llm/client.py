@@ -3,7 +3,7 @@ import re
 import time
 
 import requests
-from app.secrets import get_secret
+from app.shared.secrets import get_secret
 
 MAX_RETRIES = 3
 RETRY_DELAY = 2

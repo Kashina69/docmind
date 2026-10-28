@@ -1,5 +1,5 @@
 from supabase import create_client, Client
-from app.secrets import get_secret
+from app.shared.secrets import get_secret
 
 _service_client: Client | None = None
 

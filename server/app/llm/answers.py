@@ -1,5 +1,5 @@
-from app.llm import _call_llm
-from app.prompts import build_direct_prompt, build_rag_prompt, strip_think_tags
+from app.llm.client import _call_llm
+from app.llm.prompts import build_direct_prompt, build_rag_prompt, strip_think_tags
 
 
 def generate_answer(

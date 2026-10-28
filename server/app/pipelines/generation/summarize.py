@@ -1,8 +1,8 @@
-from app.supabase_client import get_service_client
-from app.rate_limiter import acquire_task_token
-from app.llm import generate, generate_json
-from app.jobs import write_result
-from app.sources import fetch_conversation_transcript, fetch_document, fetch_document_chunks
+from app.shared.supabase_client import get_service_client
+from app.shared.rate_limiter import acquire_task_token
+from app.llm.client import generate, generate_json
+from app.shared.jobs import write_result
+from app.pipelines.generation.fetch import fetch_conversation_transcript, fetch_document, fetch_document_chunks
 
 STUFF_THRESHOLD = 200_000
 

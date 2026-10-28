@@ -1,7 +1,7 @@
 import re
 
-from app.llm import _call_llm
-from app.prompts import format_history, strip_think_tags
+from app.llm.client import _call_llm
+from app.llm.prompts import format_history, strip_think_tags
 
 
 def rewrite_query(query: str, history: list[dict]) -> str:

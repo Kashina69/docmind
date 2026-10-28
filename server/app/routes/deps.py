@@ -2,8 +2,8 @@ import hashlib
 
 from fastapi import HTTPException
 
-from app.auth import get_user_from_token
-from app.supabase_client import get_service_client
+from app.shared.auth import get_user_from_token
+from app.shared.supabase_client import get_service_client
 
 CACHE_TTL = 3600
 

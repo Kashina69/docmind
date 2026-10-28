@@ -1,4 +1,4 @@
-from app.supabase_client import get_service_client
+from app.shared.supabase_client import get_service_client
 
 HISTORY_PAIRS = 3
 

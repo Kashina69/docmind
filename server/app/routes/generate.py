@@ -4,8 +4,8 @@ import uuid
 
 from fastapi import APIRouter, BackgroundTasks, Header, HTTPException, Request
 
-from app import flashcards, summarize
-from app.rate_limiter import get_redis_client
+from app.pipelines.generation import flashcards, summarize
+from app.shared.rate_limiter import get_redis_client
 from app.routes.deps import (
     VALID_TASK_TYPES,
     current_user,
