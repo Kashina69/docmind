@@ -7,12 +7,14 @@ interface UploadDropzoneProps {
 	onFilesSelected: (files: File[]) => void;
 	accept?: string;
 	maxSizeLabel?: string;
+	disabled?: boolean;
 }
 
 export function UploadDropzone({
 	onFilesSelected,
 	accept = "application/pdf,.pdf",
 	maxSizeLabel = "PDF only · Max 50MB",
+	disabled = false,
 }: UploadDropzoneProps) {
 	const [isDragging, setIsDragging] = useState(false);
 	const fileInputRef = useRef<HTMLInputElement>(null);
@@ -33,6 +35,7 @@ export function UploadDropzone({
 		e.preventDefault();
 		e.stopPropagation();
 		setIsDragging(false);
+		if (disabled) return;
 
 		const files = Array.from(e.dataTransfer.files).filter(
 			(file) =>
@@ -65,6 +68,7 @@ export function UploadDropzone({
 
 			<button
 				type="button"
+				disabled={disabled}
 				onDragOver={handleDragOver}
 				onDragLeave={handleDragLeave}
 				onDrop={handleDrop}

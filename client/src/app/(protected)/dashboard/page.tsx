@@ -1,61 +1,84 @@
 "use client";
 
 import { useState } from "react";
-import { ArrowPathIcon, UploadIcon } from "@/components/icons";
+import { ArrowPathIcon, TrashIcon, UploadIcon } from "@/components/icons";
 import { Button, toast } from "@/components/ui";
+import { useDocuments } from "@/hooks/useDocuments";
+import type { Document } from "@/lib/types";
 import { ChatSidebar } from "../components/ChatSidebar";
 import { DocumentCard } from "./components/DocumentCard";
 import { DocumentStatusBanner } from "./components/DocumentStatusBanner";
 import { UploadModal } from "./components/UploadModal";
-import { type DocumentItem, initialDocuments } from "./data";
+
+function formatDate(iso: string): string {
+	try {
+		return new Date(iso).toLocaleDateString(undefined, {
+			month: "short",
+			day: "numeric",
+			year: "numeric",
+		});
+	} catch {
+		return "";
+	}
+}
 
 export default function DashboardPage() {
-	const [documents, setDocuments] =
-		useState<DocumentItem[]>(initialDocuments);
-	const [isRefreshing, setIsRefreshing] = useState(false);
+	const { documents, loading, uploadDocument, deleteDocument, refresh } =
+		useDocuments();
 	const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+	const [uploading, setUploading] = useState(false);
+	const [confirmDelete, setConfirmDelete] = useState<Document | null>(null);
 
-	const processingCount = documents.filter(
-		(d) => d.status === "processing",
+	const processingCount = documents.filter((d) =>
+		["processing", "indexing"].includes(d.status),
 	).length;
 	const failedCount = documents.filter((d) => d.status === "failed").length;
 
-	const handleRefresh = () => {
-		setIsRefreshing(true);
-		setTimeout(() => {
-			// Simulate reload / status updates
-			setDocuments([...initialDocuments]);
-			setIsRefreshing(false);
-			toast.success("Documents refreshed");
-		}, 600);
+	const handleFilesUpload = async (files: File[]) => {
+		const pdfs = files.filter(
+			(f) => f.type === "application/pdf" || f.name.endsWith(".pdf"),
+		);
+		if (pdfs.length === 0) {
+			toast.error("Only PDF files are supported");
+			return;
+		}
+		if (pdfs.length !== files.length) {
+			toast.error("Skipped non-PDF files");
+		}
+		setUploading(true);
+		let ok = 0;
+		for (const file of pdfs) {
+			const doc = await uploadDocument(file);
+			if (doc) ok++;
+		}
+		setUploading(false);
+		setIsUploadModalOpen(false);
+		if (ok > 0) {
+			toast.success(
+				`Uploaded ${ok} document${ok > 1 ? "s" : ""} — processing…`,
+			);
+		} else {
+			toast.error("Upload failed");
+		}
 	};
 
-	const handleFilesUpload = (files: File[]) => {
-		const newDocs: DocumentItem[] = files.map((file, idx) => {
-			const ext = file.name.split(".").pop()?.toUpperCase() || "PDF";
-			return {
-				id: `doc-${Date.now()}-${idx}`,
-				name: file.name,
-				type: ext,
-				date: "Just now",
-				status: "processing" as const,
-			};
-		});
-
-		setDocuments((prev) => [...newDocs, ...prev]);
-		toast.success(
-			`Uploaded ${files.length} document${files.length > 1 ? "s" : ""}`,
-		);
+	const handleConfirmDelete = async () => {
+		if (!confirmDelete) return;
+		const doc = confirmDelete;
+		setConfirmDelete(null);
+		const success = await deleteDocument(doc.id);
+		if (success) {
+			toast.success(`Deleted ${doc.filename}`);
+		} else {
+			toast.error("Delete failed");
+		}
 	};
 
 	return (
 		<div className="flex h-screen bg-background text-foreground">
-			{/* Left Sidebar: Shared Chat History */}
 			<ChatSidebar />
 
-			{/* Right Content: Documents Dashboard */}
 			<main className="flex-1 flex flex-col h-full overflow-hidden">
-				{/* Top Header */}
 				<header className="h-16 border-b border-border px-6 flex items-center justify-between shrink-0">
 					<div>
 						<h1 className="text-lg font-semibold text-foreground">
@@ -67,12 +90,12 @@ export default function DashboardPage() {
 						<Button
 							variant="outline"
 							size="sm"
-							onClick={handleRefresh}
-							disabled={isRefreshing}
+							onClick={refresh}
+							disabled={loading}
 							className="gap-1.5"
 						>
 							<ArrowPathIcon
-								className={`size-4 ${isRefreshing ? "animate-spin" : ""}`}
+								className={`size-4 ${loading ? "animate-spin" : ""}`}
 							/>
 							Reload
 						</Button>
@@ -88,17 +111,18 @@ export default function DashboardPage() {
 					</div>
 				</header>
 
-				{/* Content Body */}
 				<div className="flex-1 overflow-y-auto p-6 space-y-6">
-					{/* Status Banner Component */}
 					<DocumentStatusBanner
 						totalCount={documents.length}
 						processingCount={processingCount}
 						failedCount={failedCount}
 					/>
 
-					{/* Documents Grid */}
-					{documents.length === 0 ? (
+					{loading && documents.length === 0 ? (
+						<div className="text-center py-12 text-sm text-muted-foreground">
+							Loading documents…
+						</div>
+					) : documents.length === 0 ? (
 						<div className="text-center py-12 text-sm text-muted-foreground">
 							No documents yet. Click Upload to add your first
 							document.
@@ -106,20 +130,61 @@ export default function DashboardPage() {
 					) : (
 						<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
 							{documents.map((doc) => (
-								<DocumentCard key={doc.id} document={doc} />
+								<div key={doc.id} className="relative group">
+									<DocumentCard
+										document={doc}
+										date={formatDate(doc.created_at)}
+									/>
+									<button
+										type="button"
+										onClick={() => setConfirmDelete(doc)}
+										title="Delete document"
+										className="absolute top-2 right-2 p-1.5 rounded-lg bg-background/80 border border-border text-muted-foreground hover:text-rose-400 opacity-0 group-hover:opacity-100 transition-opacity"
+									>
+										<TrashIcon className="size-3.5" />
+									</button>
+								</div>
 							))}
 						</div>
 					)}
 				</div>
 			</main>
 
-			{/* Upload Modal */}
 			<UploadModal
 				isOpen={isUploadModalOpen}
 				onClose={() => setIsUploadModalOpen(false)}
 				onUpload={handleFilesUpload}
+				uploading={uploading}
 				documents={documents}
 			/>
+
+			{confirmDelete && (
+				<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+					<div className="bg-card border border-border rounded-2xl p-6 max-w-sm w-full space-y-4">
+						<h3 className="font-semibold">Delete document?</h3>
+						<p className="text-sm text-muted-foreground break-all">
+							{confirmDelete.filename} will be permanently
+							deleted with all its chunks.
+						</p>
+						<div className="flex gap-2 justify-end">
+							<Button
+								variant="outline"
+								size="sm"
+								onClick={() => setConfirmDelete(null)}
+							>
+								Cancel
+							</Button>
+							<Button
+								variant="destructive"
+								size="sm"
+								onClick={handleConfirmDelete}
+							>
+								Delete
+							</Button>
+						</div>
+					</div>
+				</div>
+			)}
 		</div>
 	);
 }

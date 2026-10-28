@@ -37,21 +37,20 @@ export function DocumentList({
 							<div className="flex items-center gap-3 min-w-0">
 								<div className="size-8 rounded-lg bg-rose-500/10 border border-rose-500/20 flex items-center justify-center shrink-0">
 									<span className="text-[10px] font-bold text-rose-500 uppercase">
-										{doc.type}
+										PDF
 									</span>
 								</div>
 
 								<div className="min-w-0">
 									<p className="text-xs font-medium text-foreground truncate max-w-[240px] sm:max-w-[320px]">
-										{doc.name}
+										{doc.filename}
 									</p>
 									<p className="text-[10px] text-muted-foreground mt-0.5">
-										{doc.date}
+										{doc.status}
 									</p>
 								</div>
 							</div>
 
-							{/* Reusable Pill / Badge component */}
 							<Pill status={doc.status} />
 						</div>
 					))
